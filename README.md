@@ -34,7 +34,7 @@ This application allows users to create a list of countries they'd like to visit
 - **Backend**: Node.js with Express
 - **Database**: MySQL
 - **External API**: REST Countries API
-- **CI/CD**: To be implemented with [CI/CD tools, e.g., GitHub Actions, Jenkins, or Azure DevOps]
+- **CI/CD**: To be implemented with [CI/CD tools, e.g., GitHub Actions, Jenkins, or AWS,Azure DevOps]
 - **Infrastructure as Code**: To be implemented with tools like Terraform or Helm
 
 ## Best Practices
