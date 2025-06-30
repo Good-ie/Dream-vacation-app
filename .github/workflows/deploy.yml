@@ -1,11 +1,10 @@
 # .github/workflows/deploy.yml
-
 name: Deploy Dream Vacation App
 
 on:
   push:
     branches:
-      - main  # Only run this workflow when pushing to main
+      - main
 
 jobs:
   build-and-deploy:
@@ -31,3 +30,14 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/dream-vacation-frontend:latest ./frontend
           docker push ${{ secrets.DOCKER_USERNAME }}/dream-vacation-frontend:latest
 
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/dream-vacation-backend:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/dream-vacation-frontend:latest
+            docker-compose down
+            docker-compose up -d
