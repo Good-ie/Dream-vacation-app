@@ -11,13 +11,13 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// MySQL Connection Pool
+// MySQL Connection Pool using environment variables
 const pool = mysql.createPool({
-  host: 'localhost', // Replace with your host if different
-  user: 'root', // Replace with your MySQL username
-  password: '', // Replace with your MySQL password
-  database: 'dreamvacations', // Replace with your database name
-  port: 3306, // Default MySQL port
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || '',
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
 });
 
 // Ensure the table exists
@@ -38,7 +38,7 @@ const createTable = async () => {
     console.log('Table "destinations" ensured.');
   } catch (err) {
     console.error('Error ensuring table "destinations":', err.message);
-    process.exit(1); // Exit the app if the table creation fails
+    process.exit(1);
   }
 };
 
@@ -59,16 +59,21 @@ app.get('/api/destinations', async (req, res) => {
 app.post('/api/destinations', async (req, res) => {
   const { country } = req.body;
   try {
-    // Fetch country data from external API
     const response = await axios.get(`${process.env.COUNTRIES_API_BASE_URL}/name/${encodeURIComponent(country)}`);
     const countryInfo = response.data[0];
 
-    // Insert data into the MySQL database
     const [result] = await pool.query(
       'INSERT INTO destinations (country, capital, population, region) VALUES (?, ?, ?, ?)',
-      [country, countryInfo.capital[0], countryInfo.population, countryInfo.region]
+      [country, countryInfo.capital?.[0] || null, countryInfo.population, countryInfo.region]
     );
-    res.status(201).json({ id: result.insertId, country, capital: countryInfo.capital[0], population: countryInfo.population, region: countryInfo.region });
+
+    res.status(201).json({
+      id: result.insertId,
+      country,
+      capital: countryInfo.capital?.[0] || null,
+      population: countryInfo.population,
+      region: countryInfo.region,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

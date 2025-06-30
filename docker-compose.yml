@@ -1,0 +1,38 @@
+
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: goodie321
+      MYSQL_DATABASE: dream_vacation
+      MYSQL_USER: vacation_user
+      MYSQL_PASSWORD: vacation_pass
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  backend:
+    build: ./backend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: db
+      DB_USER: vacation_user
+      DB_PASSWORD: vacation_pass
+      DB_NAME: dream_vacation
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
