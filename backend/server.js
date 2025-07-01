@@ -11,6 +11,11 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// ✅ Add this here:
+app.get('/', (req, res) => {
+  res.send('Backend is running 🚀');
+});
+
 // MySQL Connection Pool using environment variables
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
