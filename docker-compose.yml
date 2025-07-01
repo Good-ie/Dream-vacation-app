@@ -14,6 +14,7 @@ services:
     ports:
       - "3306:3306"
 
+
   backend:
     build: ./backend
     restart: always
