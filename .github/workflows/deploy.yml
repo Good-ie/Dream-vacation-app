@@ -41,5 +41,6 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/dream-vacation-frontend:latest
             docker-compose down
             docker-compose up -d
+              docker system prune -f
 
             
